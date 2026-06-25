@@ -1,0 +1,53 @@
+name: infofleet_adm
+description: "A new Flutter project."
+publish_to: 'none' 
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Navegação e Gestão de Estado
+  get: ^4.6.6
+
+  # Requisições HTTP (API)
+  dio: ^5.4.0
+
+  # Armazenamento Local e Segurança
+  flutter_secure_storage: ^9.0.0
+  get_storage: ^2.1.1
+
+  # Interface e UX
+  infinite_scroll_pagination: ^4.0.0
+  cached_network_image: ^3.3.1
+  shimmer: ^3.0.0
+  google_fonts: ^6.1.0
+
+  # Utilitários e Core
+  intl: ^0.19.0
+  logger: ^2.0.2
+  equatable: ^2.0.5
+  connectivity_plus: ^5.0.2
+  dropdown_search: ^5.0.6
+
+  # Serialização de JSON
+  json_annotation: ^4.8.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  # Geração de Código para JSON
+  build_runner: ^2.4.8
+  json_serializable: ^6.7.1
+  
+  # Linting (Boas práticas de código)
+  flutter_lints: ^3.0.1
+
+        
+    
+    
+                                      
