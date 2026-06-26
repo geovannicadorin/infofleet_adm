@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../../app/themes/app_colors.dart';
+import '../controllers/splash_controller.dart';
 
 /// Splash screen com animação de entrada da marca OnBoard.
 ///
@@ -23,6 +25,13 @@ class _SplashPageState extends State<SplashPage>
   @override
   void initState() {
     super.initState();
+
+    // Garante que o controller exista e o seu ciclo de vida (onReady) execute,
+    // mesmo que a SplashPage não o consuma diretamente na árvore.
+    if (!Get.isRegistered<SplashController>()) {
+      Get.put(SplashController());
+    }
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1600),

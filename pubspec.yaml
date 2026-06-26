@@ -47,11 +47,29 @@ dev_dependencies:
   flutter_lints: ^3.0.1
   flutter_launcher_icons: ^0.13.1
 
+  # Splash screen nativa (elimina o flash branco antes do Flutter carregar)
+  flutter_native_splash: ^2.4.1
+
 flutter_launcher_icons:
   android: "ic_launcher"
   ios: true
   image_path: "assets/images/infofleet_adm_icon.png" # O caminho da tua imagem
   min_sdk_android: 21 # Suporte mínimo da tua app
+
+# Splash screen nativa: mesma logo e fundo da splash Flutter, para uma
+# transição perfeita entre o launch nativo e a animação do app.
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/images/logo_onboard_mobile.png
+
+  # Android 12+ usa uma API própria de splash (ícone central + cor de fundo).
+  android_12:
+    color: "#FFFFFF"
+    image: assets/images/logo_onboard_mobile.png
+
+  android: true
+  ios: true
+  web: false
 
 flutter:
   uses-material-design: true
