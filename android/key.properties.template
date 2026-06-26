@@ -1,0 +1,15 @@
+# Modelo de configuração de assinatura de RELEASE.
+#
+# 1. Gere a sua keystore (guarde o arquivo .jks num local seguro e faça backup!):
+#
+#    keytool -genkey -v -keystore upload-keystore.jks -storetype JKS \
+#      -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+#
+# 2. Copie este arquivo para "key.properties" (na pasta android/) e preencha os valores.
+# 3. NUNCA versione o key.properties nem o .jks (já estão no .gitignore).
+
+storePassword=SUA_SENHA_DA_STORE
+keyPassword=SUA_SENHA_DA_CHAVE
+keyAlias=upload
+# Caminho absoluto para o arquivo .jks (ex.: C:/chaves/upload-keystore.jks)
+storeFile=CAMINHO_PARA/upload-keystore.jks
