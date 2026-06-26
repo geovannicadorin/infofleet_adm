@@ -9,6 +9,11 @@ class AppColors {
   // --- Cores Principais ---
   static const Color primary = Color(0xFF7367F0);
   static const Color secondary = Color(0xFF82868B);
+
+  // --- Cores da Marca OnBoard (logo) ---
+  static const Color onboardGreen = Color(0xFF2EC04B);
+  static const Color onboardNavy = Color(0xFF221C46);
+  static const Color onboardGreenTint = Color(0xFFF1FBF4);
   
   // --- Cores de Feedback (Status) ---
   static const Color success = Color(0xFF28C76F);

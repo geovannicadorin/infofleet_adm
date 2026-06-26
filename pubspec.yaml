@@ -45,6 +45,13 @@ dev_dependencies:
   
   # Linting (Boas práticas de código)
   flutter_lints: ^3.0.1
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/images/infofleet_adm_icon.png" # O caminho da tua imagem
+  min_sdk_android: 21 # Suporte mínimo da tua app
 
 flutter:
   uses-material-design: true

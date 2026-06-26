@@ -1,10 +1,12 @@
 import 'package:get/get.dart';
 
 import '../bindings/asset_form_binding.dart';
+import '../bindings/splash_binding.dart';
 import 'app_routes.dart';
 import 'auth_guard.dart';
 
 // Imports das Views e Bindings...
+import '../../features/splash/presentation/views/splash_page.dart';
 import '../../features/auth/presentation/views/login_page.dart';
 import '../bindings/auth_binding.dart';
 import '../../features/home/presentation/views/home_page.dart';
@@ -16,9 +18,14 @@ import '../../features/assets/presentation/views/asset_form_page.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.LOGIN;
+  static const INITIAL = Routes.SPLASH;
 
   static final routes = [
+    GetPage(
+      name: Routes.SPLASH,
+      page: () => const SplashPage(),
+      binding: SplashBinding(),
+    ),
     GetPage(
       name: Routes.LOGIN,
       page: () => const LoginPage(),

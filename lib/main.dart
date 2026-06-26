@@ -8,7 +8,6 @@ import 'app/routes/app_pages.dart';
 import 'app/themes/app_theme.dart'; // A nossa configuração de Tema
 import 'core/api/api_client.dart';
 import 'core/services/auth_service.dart';
-import 'app/routes/app_routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,20 +29,18 @@ class InfofleetApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Get.find<AuthService>();
-    final initialRoute = authService.isLoggedIn.value ? Routes.HOME : AppPages.INITIAL;
-
     return GetMaterialApp(
       title: 'Infofleet OnBoard ADM',
-      debugShowCheckedModeBanner: false, 
-      
+      debugShowCheckedModeBanner: false,
+
       // --- CONFIGURAÇÃO DO TEMA CORPORATIVO ---
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.light, 
-      
+      themeMode: ThemeMode.light,
+
       // --- SISTEMA DE NAVEGAÇÃO E PROTEÇÃO ---
-      initialRoute: initialRoute,
+      // A Splash é o ponto de entrada e decide o destino (Home/Login).
+      initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
     );
   }

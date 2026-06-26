@@ -2,6 +2,7 @@
 abstract class Routes {
   Routes._(); // Construtor privado para evitar instanciação
 
+  static const SPLASH = '/splash';
   static const LOGIN = '/login';
   static const HOME = '/home';
   static const ASSETS_FORM = '/assets/form';
