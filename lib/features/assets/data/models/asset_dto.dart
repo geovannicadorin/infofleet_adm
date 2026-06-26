@@ -39,32 +39,65 @@ class AssetDetailsDTO {
   final String? customerId;
   final String? manufacturerId;
   final String? modelId;
+
+  /// Nome do modelo de catálogo referenciado por [modelId].
+  final String? modelIdName;
+
   final int? assetType;
   final String? manufacturerName;
+
+  /// Nome do modelo em texto livre.
   final String? modelName;
   final String? color;
   final dynamic manufacturingYear; // A API pode enviar como string ou int
+  final dynamic modelYear; // Idem
   final String? plate;
   final String? nickname;
   final String? chassisNumber;
+  final String? invoice;
+  final String? costCenter;
+  final String? note;
   final String? ownerName;
+  final String? dealerName;
   final String? iconUrl;
+  final String? engineType;
+  final String? engineSerialNumber;
+  final String? additional1;
+  final String? additional2;
+  final String? additional3;
+  final String? additional4;
+  final int? offlineThreshold;
+  final int? offlineNotificationThreshold;
 
   AssetDetailsDTO({
     required this.id,
     this.customerId,
     this.manufacturerId,
     this.modelId,
+    this.modelIdName,
     this.assetType,
     this.manufacturerName,
     this.modelName,
     this.color,
     this.manufacturingYear,
+    this.modelYear,
     this.plate,
     this.nickname,
     this.chassisNumber,
+    this.invoice,
+    this.costCenter,
+    this.note,
     this.ownerName,
+    this.dealerName,
     this.iconUrl,
+    this.engineType,
+    this.engineSerialNumber,
+    this.additional1,
+    this.additional2,
+    this.additional3,
+    this.additional4,
+    this.offlineThreshold,
+    this.offlineNotificationThreshold,
   });
 
   factory AssetDetailsDTO.fromJson(Map<String, dynamic> json) => _$AssetDetailsDTOFromJson(json);

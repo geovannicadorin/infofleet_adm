@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../../core/exceptions/app_exceptions.dart';
-import '../../domain/entities/asset_entity.dart';
-import '../../domain/entities/asset_type_entity.dart'; // Import da nova entidade
+import '../../domain/entities/asset_type_entity.dart';
 import '../../domain/entities/customer_entity.dart';
 import '../../domain/entities/manufacturer_entity.dart';
 import '../../domain/entities/model_entity.dart';
@@ -24,106 +22,154 @@ class AssetFormController extends GetxController {
   final RxBool isSaving = false.obs;
   final formKey = GlobalKey<FormState>();
 
-  // Controladores de Texto
+  // --- Controladores de Texto ---
   final plateController = TextEditingController();
   final nicknameController = TextEditingController();
   final chassisController = TextEditingController();
   final colorController = TextEditingController();
   final manufacturingYearController = TextEditingController();
+  final modelYearController = TextEditingController();
+  final invoiceController = TextEditingController();
+  final costCenterController = TextEditingController();
+  final noteController = TextEditingController();
+  final engineTypeController = TextEditingController();
+  final engineSerialNumberController = TextEditingController();
+  final additional1Controller = TextEditingController();
+  final additional2Controller = TextEditingController();
+  final additional3Controller = TextEditingController();
+  final additional4Controller = TextEditingController();
+  final offlineThresholdController = TextEditingController();
+  final offlineNotificationThresholdController = TextEditingController();
 
-  // Controladores de Autocomplete / Select (Seleções)
+  late final List<TextEditingController> _allTextControllers = [
+    plateController,
+    nicknameController,
+    chassisController,
+    colorController,
+    manufacturingYearController,
+    modelYearController,
+    invoiceController,
+    costCenterController,
+    noteController,
+    engineTypeController,
+    engineSerialNumberController,
+    additional1Controller,
+    additional2Controller,
+    additional3Controller,
+    additional4Controller,
+    offlineThresholdController,
+    offlineNotificationThresholdController,
+  ];
+
+  // --- Seleções (Autocomplete / Select) ---
   final Rx<CustomerEntity?> selectedCustomer = Rx<CustomerEntity?>(null);
   final Rx<ManufacturerEntity?> selectedManufacturer = Rx<ManufacturerEntity?>(null);
   final Rx<ModelEntity?> selectedModel = Rx<ModelEntity?>(null);
-
-  // SOLUÇÃO DO ERRO: Adicionada a propriedade observável para o Tipo de Ativo
   final Rx<AssetTypeEntity?> selectedAssetType = Rx<AssetTypeEntity?>(null);
 
   @override
   void onInit() {
     super.onInit();
-    // Recebe o ID da rota anterior, se existir
     assetId = Get.arguments as String?;
-
     if (isEditing) {
       _loadAssetDetails();
     }
   }
 
-  /// Carrega os detalhes do Ativo e preenche os campos do formulário
+  /// Carrega os detalhes do Ativo e preenche os campos do formulário.
   Future<void> _loadAssetDetails() async {
     isLoadingDetails.value = true;
     try {
       final asset = await _repository.getAssetDetails(assetId!);
 
-      // Preenche os campos de texto
+      // Campos de texto
       plateController.text = asset.plate;
       nicknameController.text = asset.nickname;
       chassisController.text = asset.chassisNumber;
       colorController.text = asset.color ?? '';
       manufacturingYearController.text = asset.manufacturingYear?.toString() ?? '';
+      modelYearController.text = asset.modelYear?.toString() ?? '';
+      invoiceController.text = asset.invoice ?? '';
+      costCenterController.text = asset.costCenter ?? '';
+      noteController.text = asset.note ?? '';
+      engineTypeController.text = asset.engineType ?? '';
+      engineSerialNumberController.text = asset.engineSerialNumber ?? '';
+      additional1Controller.text = asset.additional1 ?? '';
+      additional2Controller.text = asset.additional2 ?? '';
+      additional3Controller.text = asset.additional3 ?? '';
+      additional4Controller.text = asset.additional4 ?? '';
+      offlineThresholdController.text = asset.offlineThreshold?.toString() ?? '';
+      offlineNotificationThresholdController.text =
+          asset.offlineNotificationThreshold?.toString() ?? '';
 
-      // Preenche os Autocompletes com instâncias "Fake/Iniciais" apenas para mostrar o nome na UI
+      // Proprietário (a resposta já traz o nome)
       if (asset.customerId != null) {
-        selectedCustomer.value = CustomerEntity(id: asset.customerId!, name: asset.ownerName);
+        selectedCustomer.value =
+            CustomerEntity(id: asset.customerId!, name: asset.ownerName);
       }
+
+      // Fabricante: a resposta NÃO traz o nome, apenas o id.
+      // Resolvemos o nome real consultando a lista de fabricantes.
       if (asset.manufacturerId != null) {
-        selectedManufacturer.value = ManufacturerEntity(id: asset.manufacturerId!, name: asset.manufacturerName);
+        await _resolveManufacturer(asset.manufacturerId!, asset.manufacturerName);
       }
+
+      // Modelo de catálogo: usa o nome que vem em modelIdName (fallback modelName).
       if (asset.modelId != null) {
-        selectedModel.value = ModelEntity(id: asset.modelId!, name: asset.modelName);
+        selectedModel.value = ModelEntity(
+          id: asset.modelId!,
+          name: asset.modelIdName ?? asset.modelName,
+        );
       }
 
-      // SOLUÇÃO ADICIONAL: Se a API trouxer o Tipo de Ativo no detalhe, carregamos ele no Select
+      // Tipo de Ativo: resolve o objeto a partir do id numérico.
       if (asset.assetType != null) {
-        // Buscamos a lista para encontrar o objeto correspondente ao ID vindo do C#
         final types = await _repository.getAssetTypes();
-        selectedAssetType.value = types.firstWhereOrNull((t) => t.id == asset.assetType);
+        selectedAssetType.value =
+            types.firstWhereOrNull((t) => t.id == asset.assetType);
       }
-
     } catch (e) {
       Get.snackbar('Erro', 'Não foi possível carregar os detalhes do ativo.');
-      Get.back(); // Volta para a lista se falhar
+      Get.back();
     } finally {
       isLoadingDetails.value = false;
     }
   }
 
-  /// Lida com a mudança de Fabricante (Limpa o modelo selecionado)
-  void onManufacturerChanged(ManufacturerEntity? manufacturer) {
-    selectedManufacturer.value = manufacturer;
-    selectedModel.value = null; // Reseta o modelo, pois depende do fabricante
+  /// Busca o nome real do fabricante na lista; se não encontrar, usa um fallback.
+  Future<void> _resolveManufacturer(String id, String fallbackName) async {
+    try {
+      final manufacturers = await _repository.getManufacturers();
+      selectedManufacturer.value =
+          manufacturers.firstWhereOrNull((m) => m.id == id) ??
+              ManufacturerEntity(id: id, name: fallbackName);
+    } catch (_) {
+      selectedManufacturer.value = ManufacturerEntity(id: id, name: fallbackName);
+    }
   }
 
-  /// Monta o Payload e decide se faz POST ou PUT
+  /// Lida com a mudança de Fabricante (Limpa o modelo selecionado).
+  void onManufacturerChanged(ManufacturerEntity? manufacturer) {
+    selectedManufacturer.value = manufacturer;
+    selectedModel.value = null; // O modelo depende do fabricante.
+  }
+
+  /// Monta o Payload e decide se faz POST (criar) ou PUT (atualizar).
   Future<void> saveAsset() async {
     if (!formKey.currentState!.validate()) return;
 
-    // Validações manuais para as seleções obrigatórias
     if (selectedCustomer.value == null ||
         selectedManufacturer.value == null ||
         selectedModel.value == null ||
-        selectedAssetType.value == null) { // Adicionada validação do Tipo de Ativo
-      Get.snackbar('Atenção', 'Por favor, preencha os campos obrigatórios de seleção (*).');
+        selectedAssetType.value == null) {
+      Get.snackbar('Atenção',
+          'Preencha os campos obrigatórios de seleção (Cliente, Fabricante, Modelo e Tipo).');
       return;
     }
 
     isSaving.value = true;
-
     try {
-      // Monta o JSON exato exigido na sua model do backend C#
-      final payload = {
-        if (isEditing) "id": assetId, // O PUT exige o ID no payload
-        "customerId": selectedCustomer.value!.id,
-        "manufacturerId": selectedManufacturer.value!.id,
-        "modelId": selectedModel.value!.id,
-        "assetType": selectedAssetType.value!.id, // SOLUÇÃO: Envia o ID numérico correto (1 a 47)
-        "plate": plateController.text,
-        "nickname": nicknameController.text,
-        "chassisNumber": chassisController.text,
-        "color": colorController.text,
-        "manufacturingYear": int.tryParse(manufacturingYearController.text) ?? 0,
-      };
+      final payload = _buildPayload();
 
       if (isEditing) {
         await _repository.updateAsset(payload);
@@ -133,25 +179,73 @@ class AssetFormController extends GetxController {
         Get.snackbar('Sucesso', 'Ativo criado com sucesso!');
       }
 
-      // Atualiza a lista (se ainda estiver viva em memória) e fecha o formulário
       if (Get.isRegistered<AssetListController>()) {
         Get.find<AssetListController>().onRefresh();
       }
       Get.back();
-
     } catch (e) {
-      Get.snackbar('Erro ao Salvar', e.toString(), backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar('Erro ao Salvar', e.toString(),
+          backgroundColor: Colors.red, colorText: Colors.white);
     } finally {
       isSaving.value = false;
     }
   }
 
-  // Métodos expostos para os Autocompletes buscarem dados
-  Future<List<CustomerEntity>> searchCustomers(String query) => _repository.searchCustomers(query, 1);
-  Future<List<ManufacturerEntity>> searchManufacturers(String query) => _repository.getManufacturers();
+  /// Constrói o corpo da requisição alinhado às models Create/Update do backend.
+  Map<String, dynamic> _buildPayload() {
+    final payload = <String, dynamic>{
+      if (isEditing) 'id': assetId,
+      'customerId': selectedCustomer.value!.id,
+      'manufacturerId': selectedManufacturer.value!.id,
+      'modelId': selectedModel.value!.id,
+      // ModelName é obrigatório no backend; usamos o nome do modelo selecionado.
+      'modelName': selectedModel.value!.name,
+      'assetType': selectedAssetType.value!.id,
+      'plate': plateController.text.trim(),
+      'nickname': nicknameController.text.trim(),
+      'chassisNumber': chassisController.text.trim(),
+      'color': _textOrNull(colorController),
+      'manufacturingYear': _intOrNull(manufacturingYearController),
+      'modelYear': _intOrNull(modelYearController),
+      'invoice': _textOrNull(invoiceController),
+      'costCenter': _textOrNull(costCenterController),
+      'note': _textOrNull(noteController),
+      'offlineThreshold': _intOrNull(offlineThresholdController),
+      'offlineNotificationThreshold':
+          _intOrNull(offlineNotificationThresholdController),
+    };
 
-  // SOLUÇÃO DO ERRO: Adicionado o método que a View chama para o Select
-  Future<List<AssetTypeEntity>> searchAssetTypes(String query) => _repository.getAssetTypes();
+    // Campos exclusivos do UpdateAssetRequest.
+    if (isEditing) {
+      payload.addAll({
+        'engineType': engineTypeController.text.trim(),
+        'engineSerialNumber': engineSerialNumberController.text.trim(),
+        'additional1': _textOrNull(additional1Controller),
+        'additional2': _textOrNull(additional2Controller),
+        'additional3': _textOrNull(additional3Controller),
+        'additional4': _textOrNull(additional4Controller),
+      });
+    }
+
+    return payload;
+  }
+
+  String? _textOrNull(TextEditingController c) {
+    final value = c.text.trim();
+    return value.isEmpty ? null : value;
+  }
+
+  int? _intOrNull(TextEditingController c) => int.tryParse(c.text.trim());
+
+  // --- Métodos expostos para os Autocompletes buscarem dados ---
+  Future<List<CustomerEntity>> searchCustomers(String query) =>
+      _repository.searchCustomers(query, 1);
+
+  Future<List<ManufacturerEntity>> searchManufacturers(String query) =>
+      _repository.getManufacturers();
+
+  Future<List<AssetTypeEntity>> searchAssetTypes(String query) =>
+      _repository.getAssetTypes();
 
   Future<List<ModelEntity>> searchModels(String query) {
     if (selectedManufacturer.value == null) return Future.value([]);
@@ -160,11 +254,9 @@ class AssetFormController extends GetxController {
 
   @override
   void onClose() {
-    plateController.dispose();
-    nicknameController.dispose();
-    chassisController.dispose();
-    colorController.dispose();
-    manufacturingYearController.dispose();
+    for (final c in _allTextControllers) {
+      c.dispose();
+    }
     super.onClose();
   }
 }

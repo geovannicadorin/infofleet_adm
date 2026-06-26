@@ -17,9 +17,24 @@ class AssetEntity extends Equatable {
   final String? customerId;
   final String? manufacturerId;
   final String? modelId;
+
+  /// Nome do modelo de catálogo (referenciado por [modelId]).
+  final String? modelIdName;
   final int? assetType;
   final String? color;
   final int? manufacturingYear;
+  final int? modelYear;
+  final String? invoice;
+  final String? costCenter;
+  final String? note;
+  final String? engineType;
+  final String? engineSerialNumber;
+  final String? additional1;
+  final String? additional2;
+  final String? additional3;
+  final String? additional4;
+  final int? offlineThreshold;
+  final int? offlineNotificationThreshold;
 
   const AssetEntity({
     required this.id,
@@ -34,9 +49,22 @@ class AssetEntity extends Equatable {
     this.customerId,
     this.manufacturerId,
     this.modelId,
+    this.modelIdName,
     this.assetType,
     this.color,
     this.manufacturingYear,
+    this.modelYear,
+    this.invoice,
+    this.costCenter,
+    this.note,
+    this.engineType,
+    this.engineSerialNumber,
+    this.additional1,
+    this.additional2,
+    this.additional3,
+    this.additional4,
+    this.offlineThreshold,
+    this.offlineNotificationThreshold,
   });
 
   // Regra de Negócio: Definição do Identificador Principal
