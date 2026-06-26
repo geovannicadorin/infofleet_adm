@@ -5,8 +5,11 @@ abstract class Routes {
   static const LOGIN = '/login';
   static const HOME = '/home';
   static const ASSETS_FORM = '/assets/form';
-  
-  // Futuras rotas podem ser adicionadas aqui:
-  // static const DEVICES = '/devices';
-  // static const INSTALLATIONS = '/installations';
+
+  // --- Seções renderizadas DENTRO do shell da Home (Navigator aninhado) ---
+  static const ASSETS = '/assets';
+  static const DASHBOARD = '/dashboard';
+  static const DEVICES = '/devices';
+  static const INSTALLATIONS = '/installations';
+  static const SETTINGS = '/settings';
 }

@@ -13,6 +13,7 @@ import '../../../../../shared/components/app_multi_select.dart';
 
 // --- Imports da Feature ---
 import '../../../../../app/routes/app_routes.dart';
+import '../../../home/presentation/widgets/sidebar_menu_button.dart';
 
 // Entidades auxiliares
 import '../../domain/entities/asset_entity.dart';
@@ -33,6 +34,7 @@ class AssetListPage extends GetView<AssetListController> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gestão de Ativos'),
+        leading: SidebarMenuButton.leadingFor(context),
         actions: [
           // Botão de Filtros Avançados
           IconButton(

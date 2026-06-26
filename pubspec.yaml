@@ -11,18 +11,18 @@ dependencies:
     sdk: flutter
   
   # Navegação e Gestão de Estado
-  get: ^4.6.6
+  get: ^4.7.3
 
   # Requisições HTTP (API)
-  dio: ^5.4.0
+  dio: ^5.8.0
 
   # Armazenamento Local e Segurança
-  flutter_secure_storage: ^9.0.0
+  flutter_secure_storage: ^9.2.4
   get_storage: ^2.1.1
 
   # Interface e UX
   infinite_scroll_pagination: ^4.0.0
-  cached_network_image: ^3.3.1
+  cached_network_image: ^3.4.1
   shimmer: ^3.0.0
   google_fonts: ^6.1.0
 
@@ -30,7 +30,7 @@ dependencies:
   intl: ^0.19.0
   logger: ^2.0.2
   equatable: ^2.0.5
-  connectivity_plus: ^5.0.2
+  connectivity_plus: ^6.1.4
   dropdown_search: ^5.0.6
 
   # Serialização de JSON
@@ -41,7 +41,7 @@ dev_dependencies:
     sdk: flutter
   
   # Geração de Código para JSON
-  build_runner: ^2.4.8
+  build_runner: ^2.4.15
   json_serializable: ^6.7.1
   
   # Linting (Boas práticas de código)

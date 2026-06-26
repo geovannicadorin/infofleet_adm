@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/exceptions/app_exceptions.dart';
+import '../../../../app/routes/app_routes.dart';
 import '../../domain/usecases/login_usecase.dart';
 
 class AuthController extends GetxController {
@@ -33,7 +34,7 @@ class AuthController extends GetxController {
       );
       
       // Login com sucesso e perfil é SYSADMIN! Redireciona para Home.
-      Get.offAllNamed('/home');
+      Get.offAllNamed(Routes.HOME);
       
     } on AuthException catch (e) {
       // Mostra o erro da Regra de Negócio (ex: Não é SYSADMIN)

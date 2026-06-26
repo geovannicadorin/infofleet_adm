@@ -133,8 +133,10 @@ class AssetFormController extends GetxController {
         Get.snackbar('Sucesso', 'Ativo criado com sucesso!');
       }
 
-      // Atualiza a lista na tela anterior e fecha o formulário
-      Get.find<AssetListController>().onRefresh();
+      // Atualiza a lista (se ainda estiver viva em memória) e fecha o formulário
+      if (Get.isRegistered<AssetListController>()) {
+        Get.find<AssetListController>().onRefresh();
+      }
       Get.back();
 
     } catch (e) {

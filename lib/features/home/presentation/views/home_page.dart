@@ -1,91 +1,104 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../../app/bindings/asset_list_binding.dart';
+import '../../../../app/routes/app_routes.dart';
+import '../../../assets/presentation/views/asset_list_page.dart';
 import '../controllers/home_controller.dart';
 import '../widgets/app_sidebar.dart';
+import '../widgets/sidebar_menu_button.dart';
 
+/// Shell principal da aplicação: Sidebar fixa (desktop) ou Drawer (mobile)
+/// + uma área de conteúdo que troca de seção via Navigator aninhado do GetX.
 class HomePage extends GetView<HomeController> {
   const HomePage({super.key});
 
+  static const double _sidebarWidth = 280;
+
   @override
   Widget build(BuildContext context) {
-    // Usamos um LayoutBuilder para tornar o layout responsivo
-    // Se for tablet/desktop, a Sidebar fica fixa. Se for telemóvel, vira um Drawer escondido.
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isDesktop = constraints.maxWidth >= 800; // Ponto de quebra (breakpoint)
+        final isDesktop =
+            constraints.maxWidth >= HomeController.desktopBreakpoint;
+        final theme = Theme.of(context);
 
         return Scaffold(
-          // Se for telemóvel, usamos AppBar com botão de hambúrguer
-          appBar: isDesktop
-              ? null
-              : AppBar(
-                  title: Obx(() {
-                    // Atualiza o título da AppBar dinamicamente com base na rota
-                    final currentItem = controller.menuItems.firstWhereOrNull(
-                      (item) => item.route == controller.currentRoute.value,
-                    );
-                    return Text(currentItem?.title ?? 'Infofleet ADM');
-                  }),
-                ),
-          
-          // Drawer só é atribuído se for tela pequena
+          key: controller.scaffoldKey,
+          // Sem AppBar no shell: cada seção tem a sua própria (com o botão
+          // de menu no mobile), evitando AppBars duplicadas.
           drawer: isDesktop ? null : const AppSidebar(),
-
           body: Row(
             children: [
-              // Se for tela grande, a Sidebar fica sempre visível e fixa na esquerda
-              if (isDesktop) 
-                const SizedBox(
-                  width: 280, // Largura fixa da Sidebar
-                  child: AppSidebar(),
+              if (isDesktop) ...[
+                const SizedBox(width: _sidebarWidth, child: AppSidebar()),
+                VerticalDivider(
+                  width: 1,
+                  color: theme.colorScheme.secondary.withOpacity(0.2),
                 ),
-              
-              // Divisória vertical para ecrãs grandes
-              if (isDesktop) 
-                VerticalDivider(width: 1, color: Theme.of(context).colorScheme.secondary.withOpacity(0.2)),
-
-              // O MIOLO DA APLICAÇÃO (Onde as telas de Ativos, Dispositivos, etc. vão aparecer)
-              Expanded(
-                child: Navigator(
-                  key: Get.nestedKey(HomeController.nestedNavigationId),
-                  // A Rota inicial do Navigator aninhado
-                  initialRoute: '/assets',
-                  onGenerateRoute: (settings) {
-                    // Aqui definimos o que renderizar para cada rota interna
-                    Widget page;
-                    switch (settings.name) {
-                      case '/assets':
-                        // Temporário até criarmos a feature de Ativos
-                        page = const Center(child: Text('Feature de Ativos: Listagem em breve!')); 
-                        break;
-                      case '/dashboard':
-                        page = const Center(child: Text('Feature de Dashboard (Futuro)'));
-                        break;
-                      case '/devices':
-                        page = const Center(child: Text('Feature de Dispositivos (Futuro)'));
-                        break;
-                      case '/installations':
-                        page = const Center(child: Text('Feature de Instalações (Futuro)'));
-                        break;
-                      case '/settings':
-                        page = const Center(child: Text('Feature de Configurações (Futuro)'));
-                        break;
-                      default:
-                        page = const Center(child: Text('Página não encontrada.'));
-                    }
-
-                    // Transição suave de Fade ao trocar de ecrã no menu
-                    return GetPageRoute(
-                      page: () => page,
-                      transition: Transition.fadeIn,
-                    );
-                  },
-                ),
-              ),
+              ],
+              Expanded(child: _buildContentNavigator()),
             ],
           ),
         );
       },
+    );
+  }
+
+  /// Navigator aninhado: renderiza a seção ativa do menu mantendo a Sidebar.
+  Widget _buildContentNavigator() {
+    return Navigator(
+      key: Get.nestedKey(HomeController.nestedNavigationId),
+      initialRoute: Routes.ASSETS,
+      onGenerateRoute: _onGenerateRoute,
+    );
+  }
+
+  Route<dynamic> _onGenerateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case Routes.ASSETS:
+        // A Listagem de Ativos É a tela principal da Home (sem duplicação).
+        return GetPageRoute(
+          settings: settings,
+          page: () => const AssetListPage(),
+          binding: AssetListBinding(),
+          transition: Transition.fadeIn,
+        );
+      default:
+        return GetPageRoute(
+          settings: settings,
+          page: () => _PlaceholderSection(title: controller.currentTitle),
+          transition: Transition.fadeIn,
+        );
+    }
+  }
+}
+
+/// Seção provisória para módulos ainda não implementados (Dashboard, etc.).
+class _PlaceholderSection extends StatelessWidget {
+  const _PlaceholderSection({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+        leading: SidebarMenuButton.leadingFor(context),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.construction_outlined,
+                size: 48, color: theme.colorScheme.secondary),
+            const SizedBox(height: 12),
+            Text('Módulo em desenvolvimento', style: theme.textTheme.titleMedium),
+          ],
+        ),
+      ),
     );
   }
 }
