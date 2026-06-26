@@ -31,7 +31,6 @@ dependencies:
   logger: ^2.0.2
   equatable: ^2.0.5
   connectivity_plus: ^6.1.4
-  dropdown_search: ^5.0.6
 
   # Serialização de JSON
   json_annotation: ^4.8.1
@@ -46,6 +45,12 @@ dev_dependencies:
   
   # Linting (Boas práticas de código)
   flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
 
         
     

@@ -21,7 +21,7 @@ class AuthInterceptor extends Interceptor {
     }
 
     logger.i('=> ENVIANDO REQUISIÇÃO: [${options.method}] ${options.uri}');
-    
+
     // Continua a requisição
     super.onRequest(options, handler);
   }

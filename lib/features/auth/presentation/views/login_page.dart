@@ -23,8 +23,12 @@ class LoginPage extends GetView<AuthController> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Logo ou Título da Aplicação
-                  Icon(Icons.directions_car, size: 64, color: theme.primaryColor),
+                  // Logo da OnBoard
+                  Image.asset(
+                    'assets/images/logo_onboard_mobile.png',
+                    height: 64,
+                    fit: BoxFit.contain,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'Infofleet OnBoard ADM',

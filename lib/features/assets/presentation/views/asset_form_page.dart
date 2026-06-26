@@ -90,10 +90,11 @@ class AssetFormPage extends GetView<AssetFormController> {
                     label: 'Tipo de Ativo *',
                     hintText: 'Selecione o tipo de ativo...',
                     selectedItem: controller.selectedAssetType.value,
-                    asyncItems: controller.searchAssetTypes, // Traz a lista estática
+                    asyncItems: controller.searchAssetTypes,
                     itemAsString: (type) => type.name,
+                    compareFn: (a, b) => a.id == b.id,
                     onChanged: (val) => controller.selectedAssetType.value = val,
-                    showSearchBox: false, // <-- A propriedade que transforma o Autosuggest num Select
+                    showSearchBox: false,
                   ),
                   const SizedBox(height: 16),
 

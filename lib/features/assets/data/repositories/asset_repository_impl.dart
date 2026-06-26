@@ -96,14 +96,23 @@ class AssetRepositoryImpl implements IAssetRepository {
     final response = await _dio.get(
       '/api/v1/Customer/search',
       queryParameters: {
-        'Search': query,
-        'CustomerTypes': [2, 3], // Regra exigida na documentação
+        'Search': query.trim(),
         'Page': page,
         'PerPage': 20,
       },
     );
-    // Mapeia a lista de clientes (Simplificado para o exemplo)
-    return (response.data['data'] as List).map((c) => CustomerEntity(id: c['id'], name: c['name'])).toList();
+
+    final dynamic raw = response.data;
+    final List list = raw is List ? raw : (raw['data'] as List? ?? const []);
+
+    return list
+        .map((c) => CustomerEntity(
+              id: c['id'],
+              name: c['name'] ?? '',
+              document: c['document'],
+              email: c['email'],
+            ))
+        .toList();
   }
 
   @override
@@ -129,23 +138,31 @@ class AssetRepositoryImpl implements IAssetRepository {
   @override
   Future<List<AssetTypeEntity>> getAssetTypes() async {
     final response = await _dio.get('/api/v1/Asset/searchtype');
-    return (response.data['data'] as List)
+
+    final dynamic raw = response.data;
+    final List list = raw is List ? raw : (raw['data'] as List? ?? const []);
+
+    return list
         .map((json) => AssetTypeEntity(
-      id: json['id'],
-      name: json['name'],
-    ))
+              id: json['id'],
+              name: json['name'] ?? '',
+            ))
         .toList();
   }
 
   @override
   Future<List<WorkStatusEntity>> getWorkStatuses() async {
     final response = await _dio.get('/api/v1/Asset/searchworkstatus');
-    return (response.data['data'] as List)
+
+    final dynamic raw = response.data;
+    final List list = raw is List ? raw : (raw['data'] as List? ?? const []);
+
+    return list
         .map((json) => WorkStatusEntity(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'] ?? '',
-    ))
+              id: json['id'],
+              name: json['name'] ?? '',
+              description: json['description'] ?? '',
+            ))
         .toList();
   }
 }

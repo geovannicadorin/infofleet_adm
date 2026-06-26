@@ -203,8 +203,9 @@ class AssetListPage extends GetView<AssetListController> {
                 selectedItem: controller.filterAssetType.value,
                 asyncItems: controller.getAssetTypes,
                 itemAsString: (type) => type.name,
+                compareFn: (a, b) => a.id == b.id,
                 onChanged: (val) => controller.filterAssetType.value = val,
-                showSearchBox: false, // <-- Propriedade ajustada conforme a regra da API
+                showSearchBox: false,
               )),
               const SizedBox(height: 16),
 
@@ -239,6 +240,7 @@ class AssetListPage extends GetView<AssetListController> {
                 selectedItems: controller.filterStatuses.toList(),
                 asyncItems: controller.getWorkStatuses,
                 itemAsString: (status) => status.description,
+                compareFn: (a, b) => a.id == b.id,
                 onChanged: (val) => controller.filterStatuses.assignAll(val),
               )),
               

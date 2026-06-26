@@ -17,6 +17,10 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        // O servidor localiza os nomes (ex.: tipos de ativo) por idioma.
+        // Sem este header, ele cai na cultura invariant e devolve nomes vazios.
+        // Inclui o fallback 'pt' para casos em que só essa cultura é suportada.
+        'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
       },
     );
 
